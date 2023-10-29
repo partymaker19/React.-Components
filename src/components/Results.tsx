@@ -11,6 +11,7 @@ const resultsStyle = {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
+  flexDirection: 'column' as 'column',
 };
 
 class Results extends Component<ResultsProps> {

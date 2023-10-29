@@ -12,7 +12,7 @@ const searchStyle = {
   alignItems: 'center',
   flexDirection: 'column' as 'column',
   gap: '10px',
-  height: '45vh',
+  height: '30vh',
 };
 
 class Search extends Component<SearchProps> {

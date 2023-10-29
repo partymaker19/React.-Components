@@ -9,37 +9,62 @@ const centerStyle = {
   justifyContent: 'center',
   alignItems: 'center',
   flexDirection: 'column' as 'column',
-  gap: '30px',
+  gap: '20px',
+};
+
+type Result = {
+  name: string;
 };
 
 class App extends Component {
   state = {
     searchTerm: localStorage.getItem('searchTerm') || '',
     searchResults: [],
-    loading: false,
+    allResults: [] as Result[],
+    loading: true,
     error: false,
     errorMessage: '',
   };
 
-  handleSearch = (searchTerm: string) => {
-    searchTerm = searchTerm.trim();
-    this.setState({ searchTerm, loading: true });
+  componentDidMount() {
+    this.fetchAllData();
+  }
 
-    localStorage.setItem('searchTerm', searchTerm);
-
-    fetch(`https://swapi.dev/api/people/?search=${searchTerm}`)
+  fetchAllData = () => {
+    fetch('https://swapi.dev/api/people/')
       .then((response) => response.json())
       .then((data) => {
-        this.setState({ searchResults: data.results, loading: false });
+        this.setState({ allResults: data.results, loading: false });
       })
       .catch((error) => {
-        console.error('Ошибка:', error);
+        console.error('Error:', error);
         this.setState({
           error: true,
           loading: false,
           errorMessage: error.message,
         });
       });
+  };
+
+  handleSearch = (searchTerm: string) => {
+    this.setState({
+      searchTerm,
+      loading: false,
+      error: false,
+      errorMessage: '',
+    });
+
+    if (searchTerm) {
+      const filteredResults = this.state.allResults.filter((result) =>
+        result.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      this.setState({ searchResults: filteredResults });
+    } else {
+      this.setState({ searchResults: [] });
+    }
+
+    localStorage.setItem('searchTerm', searchTerm);
   };
 
   throwError = () => {
@@ -51,14 +76,26 @@ class App extends Component {
   };
 
   render() {
-    const { searchTerm, searchResults, loading, error, errorMessage } =
-      this.state;
+    const {
+      searchTerm,
+      searchResults,
+      loading,
+      error,
+      errorMessage,
+      allResults,
+    } = this.state;
 
     return (
       <div style={centerStyle}>
-        <Search onSearch={this.handleSearch} initialSearchTerm={searchTerm} />
-        {error && <p>Error: {errorMessage}</p>}
-        <Results results={searchResults} loading={loading} error={error} />
+        <div>
+          <Search onSearch={this.handleSearch} initialSearchTerm={searchTerm} />
+          {error && <p>Error: {errorMessage}</p>}
+          <Results
+            results={searchResults.length > 0 ? searchResults : allResults}
+            loading={loading}
+            error={error}
+          />
+        </div>
         <button onClick={this.throwError}>Throw Error</button>
       </div>
     );
