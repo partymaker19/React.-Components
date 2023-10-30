@@ -31,7 +31,7 @@ class App extends Component {
   }
 
   fetchAllData = () => {
-    fetch('https://swapi.dev/api/people/')
+    fetch('https://swapi.dev/api/people')
       .then((response) => response.json())
       .then((data) => {
         this.setState({ allResults: data.results, loading: false });
