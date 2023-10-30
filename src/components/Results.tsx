@@ -9,16 +9,16 @@ interface ResultsProps {
 
 const resultsContainerStyle: React.CSSProperties = {
   display: 'flex',
-  flexWrap: 'wrap', // Разрешить перенос элементов на новую строку
+  flexWrap: 'wrap',
   justifyContent: 'center',
   alignItems: 'center',
 };
 
 const resultItemStyle = {
-  width: '300px', // Ширина элемента для двух рядов (можете настроить по вашему усмотрению)
-  margin: '5px', // Маржа между элементами
-  padding: '10px', // Внутренний отступ элемента
-  border: '1px solid #ccc', // Граница для элемента (по желанию)
+  width: '300px',
+  margin: '5px',
+  padding: '10px',
+  border: '1px solid #ccc',
 };
 
 class Results extends Component<ResultsProps> {
