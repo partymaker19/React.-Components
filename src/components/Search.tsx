@@ -10,7 +10,7 @@ const searchStyle = {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  flexDirection: 'column' as 'column',
+  flexDirection: 'column' as const,
   gap: '10px',
   height: '30vh',
 };

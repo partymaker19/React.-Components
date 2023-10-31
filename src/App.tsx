@@ -8,12 +8,19 @@ const centerStyle = {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  flexDirection: 'column' as 'column',
+  flexDirection: 'column' as const,
   gap: '20px',
 };
 
 type Result = {
   name: string;
+  birth_year: string;
+  eye_color: string;
+  gender: string;
+  hair_color: string;
+  height: string;
+  mass: string;
+  skin_color: string;
 };
 
 class App extends Component {
@@ -56,7 +63,7 @@ class App extends Component {
 
     if (searchTerm) {
       const filteredResults = this.state.allResults.filter((result) =>
-        result.name.toLowerCase().includes(searchTerm.toLowerCase())
+        result.name.toLowerCase().includes(searchTerm.toLowerCase()),
       );
 
       this.setState({ searchResults: filteredResults });
@@ -68,6 +75,7 @@ class App extends Component {
   };
 
   throwError = () => {
+    console.error('An error has occurred. This is a test error.');
     try {
       throw new Error('Test error');
     } catch (error) {
@@ -90,6 +98,7 @@ class App extends Component {
         <div>
           <Search onSearch={this.handleSearch} initialSearchTerm={searchTerm} />
           {error && <p>Error: {errorMessage}</p>}
+
           <Results
             results={searchResults.length > 0 ? searchResults : allResults}
             loading={loading}

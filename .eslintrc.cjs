@@ -5,6 +5,8 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
     'prettier',
+    // 'eslint:recommended',
+    'plugin:prettier/recommended',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -20,7 +22,7 @@ module.exports = {
     jest: true,
     node: true,
   },
-  plugins: ['@typescript-eslint', 'react', 'react-hooks'],
+  plugins: ['@typescript-eslint', 'react', 'react-hooks', 'prettier'],
   rules: {
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
@@ -36,6 +38,7 @@ module.exports = {
     '@typescript-eslint/no-var-requires': 'off',
     'react/jsx-uses-react': 'off',
     'react/react-in-jsx-scope': 'off',
+    'prettier/prettier': ['error', { config: '.prettierrc.js' }],
   },
   settings: {
     react: {

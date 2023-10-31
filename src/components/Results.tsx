@@ -2,9 +2,21 @@
 import React, { Component } from 'react';
 
 interface ResultsProps {
-  results: any[];
   loading: boolean;
   error: boolean;
+  results: Result[];
+}
+
+interface Result {
+  name: string;
+  description?: string;
+  birth_year: string;
+  eye_color: string;
+  gender: string;
+  hair_color: string;
+  height: string;
+  mass: string;
+  skin_color: string;
 }
 
 const resultsContainerStyle: React.CSSProperties = {
@@ -21,7 +33,7 @@ const resultItemStyle = {
   border: '1px solid #ccc',
 };
 
-class Results extends Component<ResultsProps> {
+class Results extends Component<ResultsProps, Result> {
   render() {
     const { results, loading, error } = this.props;
 
@@ -40,7 +52,7 @@ class Results extends Component<ResultsProps> {
 
     return (
       <div style={resultsContainerStyle}>
-        {results.map((result: any, index: number) => (
+        {results.map((result: Result) => (
           <div key={result.name} style={resultItemStyle}>
             <p>Name: {result.name}</p>
             {result.description && <p>Description: {result.description}</p>}

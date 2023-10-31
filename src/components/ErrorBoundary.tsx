@@ -1,5 +1,5 @@
 // ErrorBoundary.tsx
-import React, { Component, ReactNode } from 'react';
+import React, { Component, ReactNode, ErrorInfo } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -16,8 +16,8 @@ class ErrorBoundary extends Component<Props> {
     error: null,
   };
 
-  componentDidCatch(error: Error, info: React.ErrorInfo) {
-    console.error('Error:', error);
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error('Error:', error, info);
     this.setState({ hasError: true, error: error.message });
   }
 
