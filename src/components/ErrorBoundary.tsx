@@ -5,11 +5,6 @@ interface Props {
   children: ReactNode;
 }
 
-// interface State {
-//   hasError: boolean;
-//   error?: string; // error is optional because it's not present in the initial state
-// }
-
 class ErrorBoundary extends Component<Props> {
   state = {
     hasError: false,
