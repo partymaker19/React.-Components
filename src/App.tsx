@@ -1,18 +1,21 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Search from './components/Search';
 import Results from './components/Results';
+import Details from './components/Details';
 import ErrorBoundary from './components/ErrorBoundary';
 
-const centerStyle = {
+const centerStyle: React.CSSProperties = {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  flexDirection: 'column' as const,
+  flexDirection: 'column',
   gap: '20px',
 };
 
 type Result = {
   name: string;
+  description: string;
   birth_year: string;
   eye_color: string;
   gender: string;
@@ -22,117 +25,100 @@ type Result = {
   skin_color: string;
 };
 
-class App extends Component {
-  state = {
-    searchTerm: localStorage.getItem('searchTerm') || '',
-    searchResults: [],
-    allResults: [] as Result[],
-    loading: true,
-    error: false,
-    errorMessage: '',
-    searching: false,
+const App = () => {
+  const [searchTerm, setSearchTerm] = useState(
+    localStorage.getItem('searchTerm') || '',
+  );
+  const [searchResults, setSearchResults] = useState<Result[]>([]);
+  const [allResults, setAllResults] = useState<Result[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [searching, setSearching] = useState(false);
+
+  useEffect(() => {
+    fetchAllData();
+  }, []);
+
+  const fetchAllData = () => {
+    fetch('https://swapi.dev/api/people')
+      .then((response) => response.json())
+      .then((data) => {
+        setAllResults(data.results);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        setError(true);
+        setLoading(false);
+        setErrorMessage(error.message);
+      });
   };
 
-  componentDidMount() {
-    this.fetchAllData();
-  }
-
-  async fetchAllData() {
-    try {
-      const response = await fetch('https://swapi.dev/api/people');
-      const data = await response.json();
-      this.setState({
-        allResults: data.results,
-        loading: false,
-      });
-    } catch (error) {
-      console.error('Error:', error);
-      if (error instanceof Error) {
-        this.setState({
-          error: true,
-          loading: false,
-          errorMessage: error.message,
-        });
-      }
-    }
-  }
-
-  async handleSearch(searchTerm: string) {
-    this.setState({
-      searchTerm,
-      searchResults: [],
-      error: false,
-      errorMessage: '',
-      searching: true,
-    });
+  const handleSearch = (searchTerm: string) => {
+    setSearchTerm(searchTerm);
+    setSearching(true);
+    setError(false);
+    setErrorMessage('');
 
     if (searchTerm) {
-      try {
-        const response = await fetch(
-          `https://swapi.dev/api/people/?search=${searchTerm}`,
-        );
-        const data = await response.json();
-        this.setState({
-          searchResults: data.results,
-          searching: false,
-        });
-      } catch (error) {
-        console.error('Error:', error);
-        if (error instanceof Error) {
-          this.setState({
-            error: true,
-            errorMessage: error.message,
-            searching: false,
-          });
-        }
-      }
+      const filteredResults = allResults.filter((result) =>
+        result.name.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
+      setSearchResults(filteredResults);
+      setSearching(false);
     } else {
-      this.setState({ searching: false });
+      setSearchResults([]);
+      setSearching(false);
     }
 
     localStorage.setItem('searchTerm', searchTerm);
-  }
+  };
 
-  throwError = () => {
+  const throwError = () => {
     try {
       console.error('An error has occurred. This is a test error.');
       throw new Error('Test error');
     } catch (error) {
-      this.setState({ error: true, errorMessage: (error as Error).message });
+      if (error instanceof Error) {
+        setError(true);
+        setErrorMessage(error.message);
+      }
     }
   };
 
-  render() {
-    const {
-      searchTerm,
-      searchResults,
-      loading,
-      error,
-      errorMessage,
-      allResults,
-      searching,
-    } = this.state;
-
-    return (
-      <div style={centerStyle}>
+  return (
+    <div style={centerStyle}>
+      <Router>
         <div>
-          <Search
-            onSearch={this.handleSearch.bind(this)}
-            initialSearchTerm={searchTerm}
-          />
-          {searching && <p style={{ textAlign: 'center' }}>Loading...</p>}
+          <Search searchTerm={searchTerm} onSearch={handleSearch} />
+          {searching && (
+            <div style={{ textAlign: 'center' }}>
+              <p>Loading...</p>
+            </div>
+          )}
           {error && <p>Error: {errorMessage}</p>}
-          <Results
-            results={searchResults.length > 0 ? searchResults : allResults}
-            loading={loading}
-            error={error}
-          />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Results
+                  results={
+                    searchResults.length > 0 ? searchResults : allResults
+                  }
+                  loading={loading}
+                  error={errorMessage}
+                />
+              }
+            />
+            <Route path="/details/:id" element={<Details />} />
+          </Routes>
         </div>
-        <button onClick={this.throwError}>Throw Error</button>
-      </div>
-    );
-  }
-}
+      </Router>
+      <button onClick={throwError}>Throw Error</button>
+    </div>
+  );
+};
 
 export default () => (
   <ErrorBoundary>
